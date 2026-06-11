@@ -1,0 +1,18 @@
+database:
+  src:  # PostgreSQL source
+    type: Postgres
+    host: 127.0.0.1
+    port: 5432
+    database: purchase_s
+    schema: purchase
+    username: postgres
+    password: qq
+
+  trg:  # PostgreSQL target
+    type: Postgres
+    host: 127.0.0.1
+    port: 5432
+    database: purchase_t
+    schema: purchase  
+    username: postgres
+    password: qq

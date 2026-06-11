@@ -1,0 +1,188 @@
+assessment:
+  # Version of the assessment configuration, used for tracking changes
+  version: 1.0.1
+
+  # Indicates whether to use schema name as a parameter in metadata/validation queries
+  schema_name_in_query: 
+    src: false
+    trg: false
+
+  # SQL queries used for regular post migration assessment
+  metadata_query:
+    "01": "Simple total count of major object types"
+    "02": "Tables with identity and partitioning flags"
+    "03": "Column name, types and other properties"
+    "04": "Table sequences"
+    "05": "Sequences and their properties"
+    "06": "Primary key constraints definitions"
+    "07": "Table check constraints excluding not null"
+    "08": "Foreign key constraints definitions"
+    "09": "Indexes and their properties"
+    "10": "Calculate row counts for each table"
+    "11": "Generate row hash values for each table"
+  
+  # SQL queries used for data integrity validations/violations checks
+  validate_query:
+    "12": "Check all tables have a primary key"
+    "13": "Check for duplicate rows based on primary key"
+    "14": "Check for NULLs in NOT NULL columns"
+    "15": "Check for foreign key constraint violations"
+    "16": "Check for disabled foreign key constraints"
+    "17": "Check max value for identity columns"
+
+  # SQL queries used for final migration validation report
+  finalchk_query:
+    "F01": "Verify count of tables between source and target"
+    "F02": "Verify count of sequences between source and target"
+    "F03": "Verify count of indexes between source and target"
+    "F04": "Verify count of constraints between source and target"
+    "F05": "Verify count of stored objects across both databases"
+    "F06": "Confirm identical table names exist in both databases"
+    "F07": "Verify table options: partitioning, identity settings"
+    "F08": "Consistency of column lists across both databases"
+    "F09": "Column data types are consistent in both databases"
+    "F10": "Column nullability matches across both databases"
+    "F11": "Column default values match across both databases"
+    "F12": "Table sequence consistency validation"
+    "F13": "Table sequence count validation"
+    "F14": "Max values of identity fields match in both databases"
+    "F15": "Identity values must be <= sequence values in target"
+    "F16": "Identity values must be <= sequence values in source"
+    "F17": "Primary keys (PK) match across both databases"
+    "F18": "PK constraint status consistent across both databases"
+    "F19": "Check per-table constraint counts in both databases"
+    "F20": "Foreign key definitions validation"
+    "F21": "Foreign key parent table/columns validation"
+    "F22": "Table indexes match by fields across both databases"
+    "F23": "Table index properties validation"
+    "F24": "Table row counts match across both databases"
+    "F25": "Ensure that all target tables have primary key"
+    "F26": "The same behavior observed in source"
+    "F27": "Ensure no duplicate PK values exist in target"
+    "F28": "The same behavior observed in source"
+    "F29": "Ensure no NULLs in NOT NULL columns in target"
+    "F30": "The same behavior observed in source"
+    "F31": "No orphan rows found for fk constraints in target"
+    "F32": "The same behavior observed in source"
+    "F33": "There is no disabled foreign key constraint in target"
+    "F34": "The same behavior observed in source"
+    "F35": "Per-table row hashes identical in both databases"
+
+  # Final checks implemented as SQL scripts
+  check_events:
+    db_init: "clean_up.sql"
+    check_preparation: "pgs_indexes.sql"
+    cross_checks: "check_assm.sql"
+    perform_checks: "final_checks.sql"
+
+  # Final report configuration
+  final_report:
+    name: "FINAL MIGRATION REPORT"
+    data_query: "finalchk_query"
+    show_statistics: true
+    section_length: 90
+    items:
+      "A":
+        title: "Database Objects Counts Validation"
+        rules: 
+        - "F01": High
+        - "F02": High
+        - "F03": High
+        - "F04": High
+        - "F05": High
+      "B":
+        title: "Table Existence & Properties Validation"
+        rules: 
+        - "F06": High
+        - "F07": High
+      "C":
+        title: "Table Column Definitions Validation"
+        rules: 
+        - "F08": High
+        - "F09": High
+        - "F10": High
+        - "F11": High
+      "D":
+        title: "Sequence & Identity Validation"
+        rules: 
+        - "F12": High  
+        - "F13": High
+        - "F14": High
+        - "F15": High
+        - "F16": High
+      "E":
+        title: "Primary Key Constraints Validation"
+        rules: 
+        - "F17": High
+        - "F18": High
+      "F":
+        title: "Check Constraints Validation"
+        rules: 
+        - "F19": High
+      "G":
+        title: "Foreign Key Constraints Validation"
+        rules:
+        - "F20": High
+        - "F21": High
+      "H":
+        title: "Table Indexes Validation"
+        rules: 
+        - "F22": High
+        - "F23": High
+      "I":
+        title: "Table Data Row Count Validation"
+        rules: 
+        - "F24": High
+      "J":
+        title: "Primary Key Availability Check"
+        rules: 
+        - "F25": Medium
+        - "F26": High
+      "K":
+        title: "Primary Key Constraint Violations Check"
+        rules: 
+        - "F27": High
+        - "F28": High
+      "L":
+        title: "NOT NULL Constraint Violations Check"
+        rules: 
+        - "F29": Low
+        - "F30": High
+      "M":
+        title: "Foreign Key Constraint Violations Check"
+        rules: 
+        - "F31": Low
+        - "F32": High
+        - "F33": Low
+        - "F34": High
+      "N":
+        title: "Row-Level Data Hash Validation"
+        rules: 
+        - "F35": High
+
+run_mode:
+  check_hashes: true
+  abort_cross_check: false
+  show_elapsed_time: true
+  show_report: false
+  debug: false
+
+hashing:
+  table_structure:
+    schema_name: "SCHEMA_NAME"
+    table_name: "TABLE_NAME"
+    key_fields: "PK_COL"
+    key_values: "PK_VALUE"
+    hash_value: "ROW_HASH"
+  dbs_chunk_rows: 240000  # Number of rows to fetch per chunk from database
+  hash_workers:
+    purchase_order_items: 4
+  csv_chunk_rows: 100000  # Number of rows to read from CSV at once
+
+transformation:
+  # Fields to be converted to boolean type during migration
+  # Format: "TABLE_NAME": 
+  #   - "COLUMN_NAME|ORIGINAL_TYPE|TRUE_VALUE:FALSE_VALUE"
+  replaced_as_boolean:
+    purchase_orders:
+      - "is_active|CHAR(1)|Y:N"
