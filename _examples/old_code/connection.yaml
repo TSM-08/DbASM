@@ -1,0 +1,17 @@
+database:
+  src:  # Oracle
+    type: Oracle
+    ora_path: C:\opt\oracle\client_1\bin
+    tns_alias: IDC
+    schema: IDA_ADMIN
+    username:
+    password:
+
+  trg:  # PostgreSQL
+    type: Postgres
+    host: localhost
+    port: 5432
+    database: idc
+    schema: idc
+    username:
+    password:

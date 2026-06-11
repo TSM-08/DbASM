@@ -1,0 +1,284 @@
+version: 1.0.1
+
+assessment:
+  # SQL queries used for regular post migration assessment
+  metadata_query:
+    "01": "Simple total count of major object types"
+    "02": "Tables with identity and partitioning flags"
+    "03": "Column name, types and other properties"
+    "04": "Table sequences"
+    "05": "Sequences and their properties"
+    "06": "Primary key constraints definitions"
+    "07": "Table check constraints excluding not null"
+    "08": "Foreign key constraints definitions"
+    "09": "Indexes and their properties"
+    "10": "Calculate row counts for each table"
+    "11": "Generate row hash values for each table"
+
+  validate_query:
+    "12": "Check all tables have a primary key"
+    "13": "Check for duplicate rows based on primary key"
+    "14": "Check for NULLs in NOT NULL columns"
+    "15": "Check for foreign key constraint violations"
+    "16": "Check for disabled foreign key constraints"
+    "17": "Check max value for identity columns"
+
+  finalchk_query:
+    "F01": "Detected the correct number of tables in source"
+    "F02": "Detected the correct number of sequences in source"
+    "F03": "Detected the correct number of constraints in source"
+    "F04": "Detected the correct number of indexes in source"
+    "F05": "Verify object type counts between source and target"
+    "F06": "Verify the correct number of procedures in target"
+    "F07": "Verify the number of newly created indexes in target"
+    "F08": "Confirm identical table names exist in both databases"
+    "F09": "Verify table options: partitioning, identity settings"
+    "F10": "Consistency of column lists across both databases"
+    "F11": "Column data types are consistent in both databases"
+    "F12": "Column nullability matches across both databases"
+    "F13": "Column default values match across both databases"
+    "F14": "Table sequence consistency validation"
+    "F15": "Table sequence count validation"
+    "F16": "Max values of identity fields match in both databases"
+    "F17": "Identity values must be <= sequence values in target"
+    "F18": "Identity values must be <= sequence values in source"
+    "F19": "Primary keys (PK) match across both databases"
+    "F20": "PK constraint status consistent across both databases"
+    "F21": "Check per-table constraint counts in both databases"
+    "F22": "Foreign key definitions validation"
+    "F23": "Foreign key parent table/columns validation"
+    "F24": "Table indexes match by fields across both databases"
+    "F25": "Table index properties validation"
+    "F26": "Table row counts match across both databases"
+    "F27": "Ensure that all target tables have primary key"
+    "F28": "The same behavior observed in source"
+    "F29": "Ensure no duplicate PK values exist in target"
+    "F30": "The same behavior observed in source"
+    "F31": "Ensure NOT NULL columns have no NULL values in target"
+    "F32": "The same behavior observed in source"
+    "F33": "No orphan rows found for fk constraints in target"
+    "F34": "The same behavior observed in source"
+    "F35": "There is no disabled foreign key constraint in target"
+    "F36": "There is no disabled foreign key constraint in source"
+    "F37": "Per-table row hashes identical in both databases"
+
+  # SQL queries used for Midweek rollback processes
+  precheck_query:
+    "P01": "Total count of major object types"
+    "P02": "Tables with identity and partitioning flags"
+    "P03": "Column name, types and other properties"
+    "P04": "Table sequences"
+    "P05": "Sequences and their properties"
+    "P06": "Primary key constraints definitions"
+    "P07": "Table check constraints excluding not null"
+    "P08": "Foreign key constraints definitions"
+    "P09": "Indexes and their properties"
+    "P10": "Row counts for each table"
+    "P11": "Row hash values for each table"
+
+  incrment_query:
+    "DIS": "Detect changes for source db based on target"
+    "TAB": "Create table mapping: source vs target"
+    "COL": "Create column type mapping: source vs target"
+
+  rollback_query:
+    "F38": "The same row counts in both databases"
+    "F39": "The same row-level data hashes in both databases"
+    "F40": "There is no duplicate rows based on primary key"
+    "F41": "There is no null values for not null columns"
+    "F42": "There is no orphan rows for foreign key constraints"
+    "F43": "There is no disabled foreign key constraints"
+    "F44": "Identity column max values lag behind sequences"
+
+  # Assessment reports configuration
+  rollback_report:
+    name: "ROLLBACK ASSESSMENT REPORT"
+    data_query: "rollback_query"
+    show_statistics: false
+    items:
+      "A":
+        title: "Data validations"
+        rules: 
+        - "F38": High
+        - "F39": High
+      "B": 
+        title: "Table violations"
+        rules:
+        - "F40": High
+        - "F41": High
+        - "F42": High
+        - "F43": High
+        - "F44": High
+
+  final_report:
+    name: "FINAL MIGRATION REPORT"
+    data_query: "finalchk_query"
+    show_statistics: true
+    items:
+      "A":
+        title: "Database Objects Counts Validation"
+        rules: 
+        - "F01": High
+        - "F02": High
+        - "F03": High
+        - "F04": High
+        - "F05": High
+        - "F06": High 
+        - "F07": High
+      "B":
+        title: "Table Existence & Properties Validation"
+        rules: 
+        - "F08": High
+        - "F09": High
+      "C":
+        title: "Table Column Definitions Validation"
+        rules: 
+        - "F10": High
+        - "F11": High
+        - "F12": High
+        - "F13": High
+      "D":
+        title: "Sequence & Identity Validation"
+        rules: 
+        - "F14": High  
+        - "F15": High
+        - "F16": High
+        - "F17": High
+        - "F18": High
+      "E":
+        title: "Primary Key Constraints Validation"
+        rules: 
+        - "F19": High
+        - "F20": High
+      "F":
+        title: "Check Constraints Validation"
+        rules: 
+        - "F21": High
+      "G":
+        title: "Foreign Key Constraints Validation"
+        rules:
+        - "F22": High
+        - "F23": High
+      "H":
+        title: "Table Indexes Validation"
+        rules: 
+        - "F24": High
+        - "F25": High
+      "I":
+        title: "Table Data Row Count Validation"
+        rules: 
+        - "F26": High
+      "J":
+        title: "Primary Key Availability Check"
+        rules: 
+        - "F27": Low
+        - "F28": High
+      "K":
+        title: "Primary Key Constraint Violations Check"
+        rules: 
+        - "F29": High
+        - "F30": High
+      "L":
+        title: "NOT NULL Constraint Violations Check"
+        rules: 
+        - "F31": Low
+        - "F32": High
+      "M":
+        title: "Foreign Key Constraint Violations Check"
+        rules: 
+        - "F33": Low
+        - "F34": High
+        - "F35": High
+        - "F36": High
+      "N":
+        title: "Row-Level Data Hash Validation"
+        rules: 
+        - "F37": High
+
+run_mode:
+  check_hashes: true
+  abort_on_error: false
+  show_elapsed_time: true
+  show_report: false
+  debug: false
+
+hashing:
+  dbs_chunk_rows: 360000  # Number of rows to fetch per chunk from database
+  hash_workers:
+    AUDIT_LOGS: 12
+  csv_chunk_rows: 100000  # Number of rows to read from CSV at once
+
+pgs_converter:
+  # Fields to be converted to boolean type during migration
+  # Format: "TABLE_NAME": 
+  #   - "COLUMN_NAME|ORIGINAL_TYPE|TRUE_VALUE:FALSE_VALUE"
+  replaced_as_boolean:
+    BLOTTER_USER_CONFIG:
+      - "ACTIVE|CHAR(1)|1:0"
+    BROKERS:
+      - "ACTIVE|CHAR(1)|1:0"
+      - "ENABLED|CHAR(1)|1:0"
+    BUSINESS_HOURS:
+      - "ACTIVE|CHAR(1)|1:0"
+    COMPANIES:
+      - "ACTIVE|CHAR(1)|1:0"
+      - "HAS_MODIFY_COMPLETED_DEALS_PERMISSION|CHAR(1)|1:0"
+      - "HAS_CANCEL_COMPLETED_DEALS_PERMISSION|CHAR(1)|1:0"
+      - "IS_TMS_DEAL_STATUSES_ENABLED|CHAR(1)|1:0"
+      - "IS_COMMODITY_TRANS_REF_NUMBER_ENABLED|CHAR(1)|1:0"
+      - "IS_AUTOMATED_COMMODITY_SALES_CONFIG_ENABLED|CHAR(1)|1:0"
+      - "IS_FLOATING_RATE_ENABLED|CHAR(1)|1:0"
+      - "IS_REFERENCE_FIELD_MANDATORY|CHAR(1)|1:0"
+      - "IS_COMMODITY_TRAN_CLIENT_NAME_ENABLED|CHAR(1)|1:0"
+      - "IS_DEAL_CONVERSATION_PARSING_ENABLED|CHAR(1)|1:0"
+      - "IS_DEAL_FIELD_EDITING_AND_CONVERSATION_LINKING_ENABLED|CHAR(1)|1:0"
+    COMPANY_TCIDS:
+      - "ACTIVE|CHAR(1)|1:0"
+      - "CUSTOM_TCID|CHAR(1)|1:0"
+    CONVERSATIONS:
+      - "ACTIVE|CHAR(1)|1:0"
+    CURRENCIES:
+      - "ACTIVE|CHAR(1)|1:0"
+    DEALS:
+      - "ACTIVE|CHAR(1)|1:0"
+      - "OUTSTANDING_NOTIFIED|CHAR(1)|1:0"
+    DEAL_CUSTOM_FIELDS:
+      - "ACTIVE|CHAR(1)|1:0"
+    DEAL_FIELD_TYPE:
+      - "ACTIVE|CHAR(1)|1:0"
+    DEAL_REPORTS:
+      - "ACTIVE|CHAR(1)|1:0"
+    DEAL_TYPES:
+      - "ACTIVE|CHAR(1)|1:0"
+      - "ENABLED|CHAR(1)|1:0"
+      - "ACTUAL|CHAR(1)|1:0"
+      - "IS_AUTO_DEAL_PROCESSING_ENABLED|CHAR(1)|1:0"
+    DEAL_TYPE_FIELD:
+      - "ACTIVE|CHAR(1)|1:0"
+      - "VISIBLE|CHAR(1)|1:0"
+      - "ENABLE|CHAR(1)|1:0"
+    GROUPS:
+      - "ACTIVE|CHAR(1)|1:0"
+    MEDIA_RESOURCES:
+      - "ACTIVE|CHAR(1)|1:0"
+    PERMISSIONS:
+      - "ACTIVE|CHAR(1)|1:0"
+      - "PRIVILEGE|CHAR(1)|1:0"
+    ROLES:
+      - "ACTIVE|CHAR(1)|1:0"
+      - "DEFAULT_ROLE|CHAR(1)|1:0"
+    SUPPORT_REQUESTS:
+      - "ACTIVE|CHAR(1)|1:0"
+    USERS:
+      - "ACTIVE|CHAR(1)|1:0"
+      - "TERMS_ACCEPTED|CHAR(1)|1:0"
+      - "SERVICE_ACCOUNT|CHAR(1)|1:0"      
+    UTP_MESSAGES:
+      - "ACTIVE|CHAR(1)|1:0"
+    WORKFLOW_COMMENTS:
+      - "ACTIVE|CHAR(1)|1:0"
+    WORKFLOW_STATES:
+      - "ACTIVE|CHAR(1)|1:0"
+    WORKFLOW_TEMPLATES:
+      - "ACTIVE|CHAR(1)|1:0"
+      - "ENABLED|CHAR(1)|1:0"
