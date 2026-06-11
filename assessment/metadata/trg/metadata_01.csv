@@ -1,0 +1,6 @@
+SCHEMA_NAME,OBJECT_TYPE,OBJECT_COUNT
+DBO,check_constraints,2
+DBO,fkeys_constraints,4
+DBO,indexes,9
+DBO,pkeys_constraints,5
+DBO,tables,5

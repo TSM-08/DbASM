@@ -1,1 +1,8 @@
-
+# Generated on 2026-06-10 15:34:26
+type=MSSQL
+host=EPUAKYIL0006\SQLEXPRESS
+database=purchase
+driver=ODBC Driver 17 for SQL Server
+trusted_connection=True
+encrypt=True
+trust_server_certificate=True

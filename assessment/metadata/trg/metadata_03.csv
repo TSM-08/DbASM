@@ -1,0 +1,6 @@
+SCHEMA_NAME,TABLE_NAME,COLUMN_COUNT
+dbo,clients,6
+dbo,products,6
+dbo,purchase_order_items,6
+dbo,purchase_orders,8
+dbo,suppliers,6
