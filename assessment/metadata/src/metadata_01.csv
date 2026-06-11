@@ -1,0 +1,6 @@
+SCHEMA_NAME,OBJECT_TYPE,OBJECT_COUNT
+PURCHASE,check_constraints,2
+PURCHASE,fkeys_constraints,4
+PURCHASE,indexes,9
+PURCHASE,pkeys_constraints,5
+PURCHASE,tables,5

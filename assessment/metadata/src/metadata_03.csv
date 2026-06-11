@@ -1,0 +1,6 @@
+SCHEMA_NAME,TABLE_NAME,COLUMN_COUNT
+purchase,clients,6
+purchase,products,6
+purchase,purchase_order_items,6
+purchase,purchase_orders,8
+purchase,suppliers,6

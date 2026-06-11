@@ -1,1 +1,7 @@
-
+# Generated on 2026-06-10 15:34:26
+type=Postgres
+host=127.0.0.1
+port=5432
+database=postgres
+schema=purchase
+username=postgres

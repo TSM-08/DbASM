@@ -1,0 +1,6 @@
+SCHEMA_NAME,TABLE_NAME,ORIG_TABNAME,IS_PARTITIONED,HAS_IDENTITY
+purchase,clients,clients,NO,YES
+purchase,products,products,NO,YES
+purchase,purchase_order_items,purchase_order_items,NO,YES
+purchase,purchase_orders,purchase_orders,NO,YES
+purchase,suppliers,suppliers,NO,YES
