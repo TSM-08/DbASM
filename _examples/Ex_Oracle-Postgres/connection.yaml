@@ -1,0 +1,18 @@
+database:
+  src:  # Oracle DB source
+    type: Oracle
+    host: localhost
+    port: 1521
+    service_name: orcl
+    schema: PURCHASE
+    username: PURCHASE
+    password: purchase
+
+  trg:  # PostgreSQL target
+    type: Postgres
+    host: 127.0.0.1
+    port: 5432
+    database: postgres
+    schema: purchase
+    username: postgres
+    password: qq
