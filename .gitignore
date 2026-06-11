@@ -1,0 +1,25 @@
+# Ignore all assessment metadata source files except empty hashes directory
+/assessment/metadata/src/*
+!/assessment/metadata/src/hashes/
+/assessment/metadata/src/hashes/*
+!/assessment/metadata/src/hashes/.gitkeep
+
+# Ignore all assessment metadata target files except empty hashes directory
+/assessment/metadata/trg/*
+!/assessment/metadata/trg/hashes/
+/assessment/metadata/trg/hashes/*
+!/assessment/metadata/trg/hashes/.gitkeep
+/assessment/reports/*
+
+# Ignore Python bytecode cache directories and compiled files
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+
+# Ignore migration cache directories that should not be in source control
+/migration/src/__pycache__/
+/migration/trg/__pycache__/
+
+# Exclude old database migration example
+/_examples/Ex_Old_Db_Migration/

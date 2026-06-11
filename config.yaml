@@ -1,0 +1,82 @@
+assessment:
+  # Version of the assessment configuration, used for tracking changes
+  version: 1.0.1
+
+  # Indicates whether to use schema name as a parameter in metadata/validation queries
+  schema_name_in_query: 
+    src: false
+    trg: false
+
+  # SQL queries used for regular post migration assessment
+  metadata_query:
+    "01": "Simple total count of major object types"
+    "02": "Table metadata: partitioning, identity settings"
+    "03": "Table metadata: column count per table"
+
+  # SQL queries used for data integrity validations/violations checks
+  validate_query:
+
+  # SQL queries used for final migration validation report
+  finalchk_query:
+    "F01": "Verify count of tables between source and target"
+    "F02": "Verify count of indexes between source and target"
+    "F03": "Verify count of constraints between source and target"
+    "F04": "Verify count of stored objects across both databases"
+    "F05": "Confirm identical table names exist in both databases"
+    "F06": "Verify table options: partitioning, identity settings"
+    "F07": "Verify column count per table across both databases"
+
+  # Final checks implemented as SQL scripts
+  check_events:
+    db_init: "clean_up.sql"
+    check_preparation: "ms_indexes.sql"
+    # cross_checks: "check_assm.sql"
+    perform_checks: "final_checks.sql"
+
+  # Final report configuration
+  final_report:
+    name: "FINAL MIGRATION REPORT"
+    data_query: "finalchk_query"
+    show_statistics: true
+    section_length: 90
+    items:
+      "A":
+        title: "Database Object Counts Validation"
+        rules: 
+        - "F01": High
+        - "F02": High
+        - "F03": High
+        - "F04": High
+      "B":
+        title: "Table and Column Structure Validation"
+        rules: 
+        - "F05": High
+        - "F06": High
+        - "F07": High 
+
+run_mode:
+  check_hashes: false
+  abort_cross_check: false
+  show_elapsed_time: true
+  show_report: false
+  debug: false
+
+hashing:
+  table_structure:
+    schema_name: "SCHEMA_NAME"
+    table_name: "TABLE_NAME"
+    key_fields: "PK_COL"
+    key_values: "PK_VALUE"
+    hash_value: "ROW_HASH"
+  dbs_chunk_rows: 240000  # Number of rows to fetch per chunk from database
+  hash_workers:
+    purchase_order_items: 4
+  csv_chunk_rows: 100000  # Number of rows to read from CSV at once
+
+transformation:
+  # Fields to be converted to boolean type during migration
+  # Format: "TABLE_NAME": 
+  #   - "COLUMN_NAME|ORIGINAL_TYPE|TRUE_VALUE:FALSE_VALUE"
+  replaced_as_boolean:
+    purchase_orders:
+      - "is_active|CHAR(1)|Y:N"

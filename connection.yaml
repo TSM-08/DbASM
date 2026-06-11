@@ -1,0 +1,21 @@
+database:
+  src:  # PostgreSQL source
+    type: Postgres
+    host: 127.0.0.1
+    port: 5432
+    database: postgres
+    schema: purchase
+    username: postgres
+    password: qq
+
+  trg:  # SQL Server target
+    type: MSSQL
+    host: EPUAKYIL0006\SQLEXPRESS
+    # port: 1433
+    database: purchase
+    # username: your_username   # or omit if using Integrated Security
+    # password: your_password   # only needed if not using Integrated Security
+    driver: ODBC Driver 17 for SQL Server
+    trusted_connection: true
+    encrypt: true
+    trust_server_certificate: true
