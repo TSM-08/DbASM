@@ -1,4 +1,5 @@
 -- Script to check if all tables in the IDC schema have a primary key
+-- Data will be stored in trg/validation_12.csv (table trg.validation_12).
 --%12S
 SELECT 
     t.schemaname AS schema_name,
@@ -23,6 +24,7 @@ ORDER BY t.tablename ASC;
 --%12F
 
 -- Script to generate SQL queries that check for primary key duplicates for each table in the IDC schema
+-- Data will be stored in trg/validation_13.csv (table trg.validation_13).
 --%13S
 --#SQL#
 SELECT
@@ -49,6 +51,7 @@ GROUP BY tc.table_schema, tc.table_name;
 --%13F
 
 -- Script to generate SQL queries that check for NULLs in NOT NULL columns for each table in the IDC schema
+-- Data will be stored in trg/validation_14.csv (table trg.validation_14).
 --%14S
 --#SQL#
 SELECT
@@ -71,6 +74,7 @@ ORDER BY cols.table_name ASC, cols.column_name ASC;
 --%14F
 
 -- Script to generate SQL queries that check for foreign key constraints in the IDC schema
+-- Data will be stored in trg/validation_15.csv (table trg.validation_15).
 --%15S
 --#SQL#
 SELECT
@@ -130,6 +134,7 @@ ORDER BY tc.table_name ASC, ccu.table_name ASC;
 --%15F
 
 -- Script to find disabled foreign key constraints in the IDC schema
+-- Data will be stored in trg/validation_16.csv (table trg.validation_16).
 --%16S
 SELECT
     nsp.nspname        AS schema_name,
@@ -156,6 +161,7 @@ ORDER BY nsp.nspname ASC,
 
 -- Script to generate SQL queries to find identity columns where the sequence last_value is less 
 -- than the max value in the column
+-- Data will be stored in trg/validation_17.csv (table trg.validation_17).
 --%17S
 --#SQL#
 SELECT
