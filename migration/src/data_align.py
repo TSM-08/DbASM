@@ -2,9 +2,9 @@ from typing import Any, List, Optional, Tuple
 from source_code.data_align import BaseAdjuster, DataAdjustmentError, adjustment
 
 
-@adjustment("99")
+@adjustment("04")
 class DefaultValueAdjuster(BaseAdjuster):
-    """Handles adjustments for DATA_DEFAULT columns (query 03)."""
+    """Handles adjustments for DATA_DEFAULT columns (query 04)."""
 
     def adjust(self, raw_data: List[Tuple], columns: List[str], direction: str) -> Optional[List[Tuple]]:
         """
@@ -72,19 +72,19 @@ class DefaultValueAdjuster(BaseAdjuster):
     @staticmethod
     def _remove_postgres_cast(val: str) -> str:
         """
-        Remove PostgreSQL type casting (::type) from default values.
+        Remove PostgreSQL type casting (::type) from default values
+        and normalize surrounding parentheses.
 
         Args:
             val: Default value string potentially containing ::type cast.
 
         Returns:
-            Default value with cast removed.
+            Default value with cast removed and extra outer parentheses stripped.
         """
-        if val.endswith(")"):
-            cast_pos = val.rfind("::")
-            if cast_pos > 0:
-                return val[:cast_pos].strip() + ")"
-        elif "::" in val:
-            return val.split("::", 1)[0].strip()
+        if "::" in val:
+            val = val.split("::", 1)[0].strip()
+
+        if len(val) >= 2 and val.startswith("(") and val.endswith(")"):
+            val = val[1:-1].strip()
 
         return val
