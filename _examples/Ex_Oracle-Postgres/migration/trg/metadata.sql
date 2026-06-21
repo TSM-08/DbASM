@@ -1,7 +1,7 @@
 -- Count major object types in the current schema (tables, sequences, columns, PKs, FKs, indexes).
+-- Data will be stored in trg/metadata_01.csv (table trg.metadata_01).
 --%01S
 WITH objects AS (
-
     -- tables
     SELECT 'tables' AS object_type,
            c.relname AS object_name,
@@ -10,9 +10,7 @@ WITH objects AS (
       JOIN pg_namespace n ON n.oid = c.relnamespace
      WHERE c.relkind = 'r'
        AND n.nspname = current_schema()
-
     UNION ALL
-
     -- views
     SELECT 'views',
            c.relname,
@@ -21,18 +19,14 @@ WITH objects AS (
       JOIN pg_namespace n ON n.oid = c.relnamespace
      WHERE c.relkind = 'v'
        AND n.nspname = current_schema()
-
     UNION ALL
-
     -- sequences
     SELECT 'sequences',
            s.sequencename,
            s.schemaname
       FROM pg_catalog.pg_sequences s
      WHERE s.schemaname = current_schema()
-
     UNION ALL
-
     -- primary key constraints
     SELECT 'pkeys_constraints',
            c.conname,
@@ -42,9 +36,7 @@ WITH objects AS (
       JOIN pg_namespace n ON n.oid = t.relnamespace
      WHERE c.contype = 'p'
        AND n.nspname = current_schema()
-
     UNION ALL
-
     -- foreign key constraints
     SELECT 'fkeys_constraints',
            c.conname,
@@ -54,9 +46,7 @@ WITH objects AS (
       JOIN pg_namespace n ON n.oid = t.relnamespace
      WHERE c.contype = 'f'
        AND n.nspname = current_schema()
-
     UNION ALL
-
     -- check constraints
     SELECT 'check_constraints',
            c.conname,
@@ -66,9 +56,7 @@ WITH objects AS (
       JOIN pg_namespace n ON n.oid = t.relnamespace
      WHERE c.contype = 'c'
        AND n.nspname = current_schema()
-
     UNION ALL
-
     -- unique constraints
     SELECT 'unique_constraints',
            c.conname,
@@ -78,18 +66,14 @@ WITH objects AS (
       JOIN pg_namespace n ON n.oid = t.relnamespace
      WHERE c.contype = 'u'
        AND n.nspname = current_schema()
-
     UNION ALL
-
     -- triggers
     SELECT 'triggers',
            t.trigger_name,
            t.trigger_schema
       FROM information_schema.triggers t
      WHERE t.trigger_schema = current_schema()
-
     UNION ALL
-
     -- indexes (exclude system)
     SELECT 'indexes',
            c.relname,
@@ -100,9 +84,7 @@ WITH objects AS (
        AND n.nspname = current_schema()
        AND c.relname NOT LIKE 'pg_%'
        AND c.relname NOT LIKE 'sql_%'
-
     UNION ALL
-
     -- functions
     SELECT 'functions',
            r.routine_name,
@@ -110,9 +92,7 @@ WITH objects AS (
       FROM information_schema.routines r
      WHERE r.routine_type = 'FUNCTION'
        AND r.routine_schema = current_schema()
-
     UNION ALL
-
     -- procedures
     SELECT 'procedures',
            r.routine_name,
@@ -121,7 +101,6 @@ WITH objects AS (
      WHERE r.routine_type = 'PROCEDURE'
        AND r.routine_schema = current_schema()
 )
-
 SELECT upper(object_owner) AS schema_name,
        object_type,
        COUNT(*) AS object_count
@@ -131,6 +110,7 @@ SELECT upper(object_owner) AS schema_name,
  --%01F
 
 -- List tables with identity and partitioning flags.
+-- Data will be stored in trg/metadata_02.csv (table trg.metadata_02).
 --%02S
 SELECT
   upper(t.table_schema) AS schema_name,
@@ -154,6 +134,7 @@ ORDER BY t.table_name;
 --%02F
 
 -- Describe all columns in the schema, including data types, lengths, nullability, and defaults.
+-- Data will be stored in trg/metadata_03.csv (table trg.metadata_03).
 --%03S
 SELECT
   upper(c.table_schema) AS schema_name,
@@ -178,6 +159,7 @@ ORDER BY c.table_name, c.ordinal_position;
 --%03F
 
 -- List all identity columns and their associated sequences for the current schema.
+-- Data will be stored in trg/metadata_04.csv (table trg.metadata_04).
 --%04S
 --#SQL#
 SELECT format(
@@ -207,6 +189,7 @@ JOIN pg_attribute a
 --%04F
 
 -- List all sequences with their current value and properties.
+-- Data will be stored in trg/metadata_05.csv (table trg.metadata_05).
 --%05S
 SELECT
   upper(s.schemaname) AS schema_name,
@@ -224,6 +207,7 @@ ORDER BY s.sequencename;
 --%05F
 
 -- List all primary key constraints and their columns.
+-- Data will be stored in trg/metadata_06.csv (table trg.metadata_06).
 --%06S
 SELECT
   upper(tc.constraint_schema) AS schema_name,
@@ -246,6 +230,7 @@ ORDER BY tc.table_name, tc.constraint_name;
 --%06F
 
 -- List all check constraints and their definitions.
+-- Data will be stored in trg/metadata_07.csv (table trg.metadata_07).
 --%07S
 SELECT
   tc.constraint_schema AS schema_name,
@@ -262,6 +247,7 @@ ORDER BY table_name, constraint_name;
 --%07F
 
 -- List all foreign key constraints, their columns, referenced tables, and delete rules.
+-- Data will be stored in trg/metadata_08.csv (table trg.metadata_08).
 --%08S
 SELECT
   upper(kcu.table_schema) AS schema_name,
@@ -288,6 +274,7 @@ ORDER BY kcu.table_name, kcu.constraint_name;
 --%08F
 
 -- List all indexes, their uniqueness, primary key status, columns, and index type.
+-- Data will be stored in trg/metadata_09.csv (table trg.metadata_09).
 --%09S
 SELECT
   upper(n.nspname) AS schema_name,
@@ -311,6 +298,7 @@ ORDER BY t.relname, i.relname;
 --%09F
 
 -- Dynamically build SQL to calculate row counts for every table in the current schema.
+-- Data will be stored in trg/metadata_10.csv (table trg.metadata_10).
 --%10S
 --#SQL#
 SELECT
@@ -328,6 +316,7 @@ ORDER BY c.relname;
 --%10F
 
 -- Generate SQL query to get rows for all tables in the IDC schema
+-- Data will be stored in trg/metadata_11.csv (table trg.metadata_11).
 --%11S
 --#HASH#
 SELECT
