@@ -13,9 +13,12 @@ from .app_utils import List, Any
 
 class DbConverter(ABC):
     """Abstract base class for database value conversion."""
+    NULL_VALUE = '__NULL__'
+
     def __init__(self, debug: bool = False):
-        self._conversion_count = 0
         self._conversion_config = {}
+        self._replaced_as_boolean = {}
+        self._conversion_count = 0
         self._debug = debug
 
     @staticmethod
@@ -43,7 +46,24 @@ class DbConverter(ABC):
         return DbConverter.convert_decimal(d)  
 
     def _parse_conversion_rules(self) -> None:
-        pass
+        boolean_replacements = utils.get_config_item(self._conversion_config, 'replaced_as_boolean', default={})
+        if boolean_replacements:
+            self._parse_replacement_rules(boolean_replacements)
+
+    def _parse_replacement_rules(self, boolean_replacements: dict) -> None:
+        self._replaced_as_boolean = {}
+        for table_name, rules in boolean_replacements.items():
+            self._replaced_as_boolean[table_name.upper()] = {}
+            for rule in rules:
+                parts = rule.split('|')
+                if len(parts) == 3:
+                    col_name, orig_type, values = parts
+                    true_val, false_val = values.split(':')
+                    self._replaced_as_boolean[table_name.upper()][col_name.upper()] = {
+                        'original_type': orig_type,
+                        'true_value': true_val,
+                        'false_value': false_val
+                    }
 
     def set_config(self, config: dict) -> None:
         """
@@ -52,8 +72,9 @@ class DbConverter(ABC):
         Args:
             config (dict): Configuration parameters.
         """
-        self._conversion_config = config
-        self._parse_conversion_rules()
+        if config and isinstance(config, dict):
+            self._conversion_config = config
+            self._parse_conversion_rules()
 
     @property
     def conversion_count(self) -> int:

@@ -19,7 +19,7 @@ class FinalAssessment:
         self._schema_src = schema_src
         self._schema_trg = schema_trg
         self._config = config.get('assessment', {})
-        self._init_sql = utils.get_config_item(self._config, 'check_events', 'db_init', default=[])
+        self._init_sql = utils.get_config_item(self._config, 'check_events', 'check_db_init', default=[])
 
         self._fetch_rows = utils.get_config_item(config, 'hashing', 'csv_chunk_rows', default=10_000)
         self._db_connect = db_connect or schema_trg.db
@@ -37,7 +37,7 @@ class FinalAssessment:
     def _init_assessment_schema(self, direction: str):
         # Read, replace, and run SQL script
         for item in ['metadata', 'validation']:
-            schema_sql_path = AppBase.get_sql_path(f'{item}.sql')
+            schema_sql_path = AppBase.get_sql_path(f'create_{item}.sql')
             with open(schema_sql_path, 'r', encoding='utf-8') as f:
                 sql_script = f.read().replace("<schema_name>", direction)
             # Save to a temp file or run directly
@@ -50,7 +50,7 @@ class FinalAssessment:
             utils.remove_file(tmp_path)
 
     def pre_checks(self):
-        exec_sql = utils.get_config_item(self._config, 'check_events', 'check_preparation')
+        exec_sql = utils.get_config_item(self._config, 'check_events', 'check_init')
         if not exec_sql:
             print("Warning: No pre-check SQL files configured.")
             return

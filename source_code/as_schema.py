@@ -4,6 +4,7 @@ from .dbbase_cls import DbConnector
 from . import app_utils as utils
 
 import datetime
+import json
 
 
 SQL_CODE_NOT_EXISTS = "SQL code is not specified."
@@ -29,7 +30,7 @@ class SchemaAssessment:
         self._direction = direction
 
         self._data_query = {}
-        self._check_sql_file = utils.get_config_item(config, 'check_events', 'perform_checks')
+        self._check_sql_file = utils.get_config_item(config, 'check_events', 'check_exec')
         self._use_schema_name = utils.get_config_item(config, 'schema_name_in_query', direction, default=False)
 
         self._data_query["metadata_query"] = utils.get_config_item(config, 'metadata_query', default={})
@@ -248,17 +249,46 @@ class SchemaProcessor:
             hash_files[utils.cut_filename(file_name)] = file_name
         self.assessment._hash_files = hash_files
     
+    @staticmethod
+    def _build_final_check_log_entry(qry_id: str, description: str, cols, rows):
+        return {
+            'timestamp': datetime.datetime.now().isoformat(timespec='seconds'),
+            'query_id': qry_id,
+            'description': description,
+            'columns': cols,
+            'row_count': len(rows) if rows else 0,
+            'rows': rows,
+        }
+
     @classmethod
     def run_final_check(cls, assessment: SchemaAssessment, db: DbConnector):
+        log_entries = []
+
         for query in assessment.iterate_finalcheck_query():
             qry_id, description, sql = query
             print(f"\nChecking: [{qry_id}] {description}...")
             if not sql:
                 raise ValueError(SQL_CODE_NOT_EXISTS)
             cols, rows = db.prepare_data(sql)
-            print(f"Returned {len(rows) if rows else 0} issue(s)")
 
+            if AppBase.is_debug():
+                log_entries.append(
+                    cls._build_final_check_log_entry(qry_id, description, cols, rows)
+                )
+
+            print(f"Returned {len(rows) if rows else 0} issue(s)")
             assessment.add_finalcheck(qry_id, (cols, rows))
+
+        log_dir = utils.path_join(AppBase.BASE_PATH, 'assessment')
+        utils.FileOperations.ensure_directory(log_dir)
+        log_path = utils.path_join(log_dir, 'final_checks.log')
+        if utils.file_exists(log_path):
+            utils.remove_file(log_path)
+        
+        if AppBase.is_debug():                
+            with open(log_path, 'w', encoding='utf-8') as log_file:
+                json.dump(log_entries, log_file, ensure_ascii=False, indent=2)
+                log_file.write('\n')
     
     def save_db_env(self):
         env_path = AppBase.get_schema_path(self.direction)

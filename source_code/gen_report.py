@@ -90,9 +90,13 @@ class MigrationReport:
             migration_descr = "Migration details not available!"
          
         report_lines = []
-        report_version = utils.get_config_item(self._config, 'version', default='unknown') 
-        space_padding = ' ' * (self._section_length - len(migration_descr) - 27 - len(report_version))
-        report_lines.append(f"Assessment created at {self._created_at} {space_padding}| Version: {report_version}")
+        report_version = utils.get_config_item(self._config, 'version', default='unknown')
+
+        created_at_text = f"Assessment created at {self._created_at}"
+        version_text = f"| Version: {report_version}"
+        padding = max(0, self._section_length - len(created_at_text) - len(version_text))
+
+        report_lines.append(f"{created_at_text}{' ' * padding}{version_text}")
         report_lines.append(f"{migration_descr}")
         report_lines.append("\n" + "="*self._section_length)
         report_lines.append(f"*** {self._report_name} ***".center(self._section_length))
@@ -139,7 +143,7 @@ class MigrationReport:
                 rule_result = rule.get('result', False)
 
                 report_lines.append(f" - [{rule_id}] {rule_title}".ljust(self._section_length - 13, ' ') + 
-                    f" {severity:<7} {'[OK]' if rule_result else '[No]'} ")
+                    f" {severity:<7} {'[OK]' if rule_result else '-No-'} ")
 
         # Add statistics
         if self._show_statistics:
