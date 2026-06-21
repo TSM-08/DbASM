@@ -1,4 +1,5 @@
 -- Count major object types in the current schema (tables, sequences, columns, PKs, FKs, indexes).
+-- Data will be stored in src/metadata_01.csv (table src.metadata_01).
 --%01S
 SELECT current_schema() AS schema_name, 'tables' AS object_type,
        COUNT(*) AS object_count
@@ -71,6 +72,7 @@ SELECT current_schema(), 'procedures', COUNT(*)
 --%01F
 
 -- List tables with identity and partitioning flags.
+-- Data will be stored in src/metadata_02.csv (table src.metadata_02).
 --%02S
 SELECT
   t.table_schema AS schema_name,
@@ -94,6 +96,7 @@ ORDER BY t.table_name;
 --%02F
 
 -- Describe all columns in the schema, including data types, lengths, nullability, and defaults.
+-- Data will be stored in src/metadata_03.csv (table src.metadata_03).
 --%03S
 SELECT
   c.table_schema AS schema_name,
@@ -118,6 +121,7 @@ ORDER BY c.table_name, c.ordinal_position;
 --%03F
 
 -- List all identity columns and their associated sequences for the current schema.
+-- Data will be stored in src/metadata_04.csv (table src.metadata_04).
 --%04S
 --#SQL#
 SELECT
@@ -141,6 +145,7 @@ ORDER BY c.table_name ASC, c.ordinal_position ASC;
 --%04F
 
 -- List all sequences with their current value and properties.
+-- Data will be stored in src/metadata_05.csv (table src.metadata_05).
 --%05S
 SELECT
   s.schemaname AS schema_name,
@@ -158,6 +163,7 @@ ORDER BY s.sequencename;
 --%05F
 
 -- List all primary key constraints and their columns.
+-- Data will be stored in src/metadata_06.csv (table src.metadata_06).
 --%06S
 SELECT
   tc.constraint_schema AS schema_name,
@@ -180,6 +186,7 @@ ORDER BY tc.table_name, tc.constraint_name;
 --%06F
 
 -- List all check constraints and their definitions.
+-- Data will be stored in src/metadata_07.csv (table src.metadata_07).
 --%07S
 SELECT
   tc.constraint_schema AS schema_name,
@@ -196,6 +203,7 @@ ORDER BY table_name, constraint_name;
 --%07F
 
 -- List all foreign key constraints, their columns, referenced tables, and delete rules.
+-- Data will be stored in src/metadata_08.csv (table src.metadata_08).
 --%08S
 SELECT
   kcu.table_schema AS schema_name,
@@ -222,6 +230,7 @@ ORDER BY kcu.table_name, kcu.constraint_name;
 --%08F
 
 -- List all indexes, their uniqueness, primary key status, columns, and index type.
+-- Data will be stored in src/metadata_09.csv (table src.metadata_09).
 --%09S
 SELECT
   n.nspname AS schema_name,
@@ -245,6 +254,7 @@ ORDER BY t.relname, i.relname;
 --%09F
 
 -- Dynamically build SQL to calculate row counts for every table in the current schema.
+-- Data will be stored in src/metadata_10.csv (table src.metadata_10).
 --%10S
 --#SQL#
 SELECT
@@ -262,6 +272,7 @@ ORDER BY c.relname;
 --%10F
 
 -- Generate SQL query to get rows for all tables in the IDC schema
+-- Data will be stored in src/metadata_11.csv (table src.metadata_11).
 --%11S
 --#HASH#
 SELECT
