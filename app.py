@@ -46,6 +46,7 @@ class MigrationAssessment:
         self._show_final_report: bool = False
         self._check_hashes: bool = False
         self._abort_cross_check: bool = True
+        self._report_item: str = ''
         self._assessment = None
           
         self._load_and_validate_config()
@@ -101,6 +102,10 @@ class MigrationAssessment:
             self._show_elapsed_time = utils.get_config_item(self._config, 'run_mode', 'show_elapsed_time', default=True)
             self._show_final_report = utils.get_config_item(self._config, 'run_mode', 'show_report', default=True)
             self._abort_cross_check = utils.get_config_item(self._config, 'run_mode', 'abort_cross_check', default=True)
+            self._report_item = utils.get_config_item(self._config, 'run_mode', 'report_item', default='assessment_report')
+            assessment_config = self._config.get('assessment', {})
+            if not isinstance(assessment_config, dict) or not isinstance(assessment_config.get(self._report_item), dict):
+                raise MigrationAssessmentError(f"Invalid or missing configuration for report_item: '{self._report_item}'")
             AppBase.set_debug(utils.get_config_item(self._config, 'run_mode', 'debug', default=False))
         except Exception as e:
             raise MigrationAssessmentError(f"Failed to load configuration: {e}") from e
@@ -195,12 +200,12 @@ class MigrationAssessment:
         """
         db_config = self._connection['database'][direction]
         db_type = db_config.get('type', 'unknown')
-        connector_cls, convertor_key = AppBase.DB_CONNECT_MAP[direction]
+        connector_cls, converter_key = AppBase.DB_CONNECT_MAP[direction]
         assm_config = self._config.get('assessment', {})
         try:
             with connector_cls(**db_config) as db_connect:
-                if convertor_key:
-                    db_connect.converter.set_config(self._config.get(convertor_key, {}))
+                if converter_key:
+                    db_connect.converter.set_config(self._config.get(converter_key, {}))
                 schema = SchemaProcessor(
                     db=db_connect, config=assm_config, direction=direction
                 )
@@ -270,7 +275,7 @@ class MigrationAssessment:
             if not self._assessment:
                 raise MigrationAssessmentError("No assessment data available for report generation")
             
-            migration_report = MigrationReport(self._config, 'final_report', self._assessment, self._connection)
+            migration_report = MigrationReport(self._config, self._report_item, self._assessment, self._connection)
             report_file = AppBase.get_report_path(migration_report.report_file)
             report_content = migration_report.generate_report()
 

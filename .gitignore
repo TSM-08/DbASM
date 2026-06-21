@@ -1,15 +1,12 @@
-# Ignore all assessment metadata source files except empty hashes directory
-/assessment/metadata/src/*
+# Ignore everything under assessment folder, but keep required placeholder files
+/assessment/**
+!/assessment/metadata/
+!/assessment/metadata/src/
 !/assessment/metadata/src/hashes/
-/assessment/metadata/src/hashes/*
 !/assessment/metadata/src/hashes/.gitkeep
-
-# Ignore all assessment metadata target files except empty hashes directory
-/assessment/metadata/trg/*
+!/assessment/metadata/trg/
 !/assessment/metadata/trg/hashes/
-/assessment/metadata/trg/hashes/*
 !/assessment/metadata/trg/hashes/.gitkeep
-/assessment/reports/*
 
 # Ignore Python bytecode cache directories and compiled files
 __pycache__/

@@ -12,6 +12,9 @@ assessment:
     "01": "Simple total count of major object types"
     "02": "Table metadata: partitioning, identity settings"
     "03": "Table metadata: column count per table"
+    "04": "Column metadata: detailed column information"
+    "10": "Table row counts match across both databases"
+    "11": "Per-table row hashes identical in both databases"
 
   # SQL queries used for data integrity validations/violations checks
   validate_query:
@@ -22,19 +25,25 @@ assessment:
     "F02": "Verify count of indexes between source and target"
     "F03": "Verify count of constraints between source and target"
     "F04": "Verify count of stored objects across both databases"
-    "F05": "Confirm identical table names exist in both databases"
+    "F05": "Verify identical table names exist in both databases"
     "F06": "Verify table options: partitioning, identity settings"
     "F07": "Verify column count per table across both databases"
+    "F08": "Consistency of column lists across both databases"
+    "F09": "Column data types are consistent in both databases"
+    "F10": "Column nullability options match in both databases"
+    "F11": "Column default values match across both databases"
+    "F12": "Row counts for all tables match across both databases"
+    "F13": "Row hashes for all tables match across both databases"
 
   # Final checks implemented as SQL scripts
   check_events:
-    db_init: "clean_up.sql"
-    check_preparation: "ms_indexes.sql"
-    # cross_checks: "check_assm.sql"
-    perform_checks: "final_checks.sql"
+    check_db_init: "clean_up.sql"
+    check_init: "create_indexes.sql"
+    cross_checks: "cross_checks.sql"
+    check_exec: "final_assessment.sql"
 
-  # Final report configuration
-  final_report:
+  # Assessment report configuration
+  assessment_report:
     name: "FINAL MIGRATION REPORT"
     data_query: "finalchk_query"
     show_statistics: true
@@ -52,12 +61,22 @@ assessment:
         rules: 
         - "F05": High
         - "F06": High
-        - "F07": High 
+        - "F07": High
+        - "F08": High
+        - "F09": High
+        - "F10": High
+        - "F11": High
+      "C":
+        title: "Data Consistency Validation"
+        rules: 
+        - "F12": High
+        - "F13": High
 
 run_mode:
-  check_hashes: false
+  check_hashes: true
   abort_cross_check: false
   show_elapsed_time: true
+  report_item: "assessment_report"
   show_report: false
   debug: false
 
@@ -78,5 +97,3 @@ transformation:
   # Format: "TABLE_NAME": 
   #   - "COLUMN_NAME|ORIGINAL_TYPE|TRUE_VALUE:FALSE_VALUE"
   replaced_as_boolean:
-    purchase_orders:
-      - "is_active|CHAR(1)|Y:N"
