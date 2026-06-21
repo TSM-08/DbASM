@@ -1,4 +1,5 @@
 -- Count major object types in the current schema (tables, sequences, columns, PKs, FKs, indexes).
+-- Data will be stored in src/metadata_01.csv (table src.metadata_01).
 --%01S
 WITH objects AS (
 
@@ -148,6 +149,7 @@ SELECT upper(object_owner) AS schema_name,
 --%01F
 
 -- List tables with identity and partitioning flags.
+-- Data will be stored in src/metadata_02.csv (table src.metadata_02).
 --%02S
 SELECT t.owner AS schema_name,
        t.table_name,
@@ -171,6 +173,7 @@ SELECT t.owner AS schema_name,
 --%02F
 
 -- Describe all columns in the schema, including data types, lengths, nullability, and defaults.
+-- Data will be stored in src/metadata_03.csv (table src.metadata_03).
 --%03S
 SELECT c.owner AS schema_name,
        c.table_name,
@@ -206,6 +209,7 @@ SELECT c.owner AS schema_name,
 --%03F
 
 -- List all identity columns and their associated sequences for the current schema.
+-- Data will be stored in src/metadata_04.csv (table src.metadata_04).
 --%04S
 --#SQL#
 SELECT 'SELECT '''
@@ -227,6 +231,7 @@ SELECT 'SELECT '''
 --%04F
 
 -- List all sequences with their current value and properties.
+-- Data will be stored in src/metadata_05.csv (table src.metadata_05).
 --%05S
 SELECT s.sequence_owner AS schema_name,
        s.sequence_name,
@@ -250,6 +255,7 @@ SELECT s.sequence_owner AS schema_name,
 --%05F
 
 -- List all primary key constraints and their columns.
+-- Data will be stored in src/metadata_06.csv (table src.metadata_06).
 --%06S
 SELECT c.owner AS schema_name,
        c.table_name,
@@ -282,6 +288,7 @@ ORDER BY
 --%06F
 
 -- List all check constraints and their definitions.
+-- Data will be stored in src/metadata_07.csv (table src.metadata_07).
 --%07S
 SELECT c.owner AS schema_name,
        c.table_name,
@@ -299,6 +306,7 @@ SELECT c.owner AS schema_name,
 --%07F
 
 -- List all foreign key constraints, their columns, referenced tables, and delete rules.
+-- Data will be stored in src/metadata_08.csv (table src.metadata_08).
 --%08S
 SELECT fk.owner AS schema_name,
        fk.table_name,
@@ -336,6 +344,7 @@ SELECT fk.owner AS schema_name,
 --%08F
 
 -- List all indexes, their uniqueness, primary key status, columns, and index type.
+-- Data will be stored in src/metadata_09.csv (table src.metadata_09).
 --%09S
 SELECT upper(idx.owner) AS schema_name,
        upper(idx.table_name) AS table_name,
@@ -371,6 +380,7 @@ SELECT upper(idx.owner) AS schema_name,
 --%09F
 
 -- Dynamically build SQL to calculate row counts for every table in the current schema.
+-- Data will be stored in src/metadata_10.csv (table src.metadata_10).
 --%10S
 --#SQL#
 SELECT 'SELECT '
@@ -389,6 +399,7 @@ SELECT 'SELECT '
 --%10F
 
 -- Generate SQL query to get rows for all tables in the IDC schema
+-- Data will be stored in src/metadata_11.csv (table src.metadata_11).
 --%11S
 --#HASH#
 SELECT ac.owner AS schema_name,

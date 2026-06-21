@@ -1,4 +1,5 @@
 -- Script to check if all tables in the IDC schema have a primary key
+-- Data will be stored in src/validation_12.csv (table src.validation_12).
 --%12S
 SELECT t.owner AS schema_name,
        t.table_name  AS table_name,
@@ -18,6 +19,7 @@ SELECT t.owner AS schema_name,
 --%12F
 
 -- Script to generate SQL queries that check for primary key duplicates for each table in the IDC schema
+-- Data will be stored in src/validation_13.csv (table src.validation_13).
 --%13S
 --#SQL#
 SELECT 'SELECT '
@@ -56,6 +58,7 @@ SELECT 'SELECT '
 --%13F
 
 -- Script to generate SQL queries that check for NULLs in NOT NULL columns for each table in the IDC schema
+-- Data will be stored in src/validation_14.csv (table src.validation_14).
 --%14S
 --#SQL#
 SELECT 'SELECT '
@@ -83,6 +86,7 @@ SELECT 'SELECT '
 --%14F
 
 -- Script to generate SQL queries that check for foreign key constraints in the IDC schema
+-- Data will be stored in src/validation_15.csv (table src.validation_15).
 --%15S
 --#SQL#
 SELECT 'SELECT '
@@ -144,6 +148,7 @@ SELECT 'SELECT '
 --%15F
 
 -- Script to find disabled foreign key constraints in the IDC schema
+-- Data will be stored in src/validation_16.csv (table src.validation_16).
 --%16S
 SELECT
     fk.owner        AS schema_name,
@@ -178,6 +183,7 @@ ORDER BY
 --%16F
 
 -- Script to generate SQL queries to find identity columns where the sequence last_value is less than the max value in the column
+-- Data will be stored in src/validation_17.csv (table src.validation_17).
 --%17S
 --#SQL#
 SELECT
