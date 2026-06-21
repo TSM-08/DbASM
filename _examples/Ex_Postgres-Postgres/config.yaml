@@ -70,13 +70,13 @@ assessment:
 
   # Final checks implemented as SQL scripts
   check_events:
-    db_init: "clean_up.sql"
-    check_preparation: "pgs_indexes.sql"
-    cross_checks: "check_assm.sql"
-    perform_checks: "final_checks.sql"
+    check_db_init: "clean_up.sql"
+    check_init: "create_indexes.sql"
+    cross_checks: "cross_checks.sql"
+    check_exec: "final_assessment.sql"
 
   # Final report configuration
-  final_report:
+  assessment_report:
     name: "FINAL MIGRATION REPORT"
     data_query: "finalchk_query"
     show_statistics: true
