@@ -30,7 +30,7 @@ class OracleConvert(DbConverter):
     
     def to_str_value(self, table_name, col, value) -> str:
         if value is None:
-            result = 'None'
+            result = DbConverter.NULL_VALUE
         elif isinstance(value, oracledb.LOB):
             result = value.read()
         elif isinstance(value, datetime.datetime):

@@ -7,11 +7,11 @@ from decimal import Decimal
 class PostgreConvert(DbConverter):
     def __init__(self, debug: bool = False):
         super().__init__(debug)
-        self._replaced_as_boolean = {}
 
     def _parse_conversion_rules(self) -> None:
         boolean_replacements = utils.get_config_item(self._conversion_config, 'replaced_as_boolean', default={})
-        self._parse_replacement_rules(boolean_replacements)
+        if boolean_replacements:
+            self._parse_replacement_rules(boolean_replacements)
 
     def _parse_replacement_rules(self, boolean_replacements: dict):
         """Parse boolean replacement rules into usable format."""
@@ -60,7 +60,7 @@ class PostgreConvert(DbConverter):
 
         # Type-based conversion dispatch
         if value is None:
-            result = 'None'
+            result = DbConverter.NULL_VALUE
         elif isinstance(value, (bytes, bytearray, memoryview)):
             result = DbConverter.convert_binary(value)
         elif isinstance(value, datetime.datetime):

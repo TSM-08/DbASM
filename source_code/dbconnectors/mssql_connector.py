@@ -1,3 +1,4 @@
+import csv
 import pyodbc
 import datetime, source_code.app_utils as utils
 from source_code.dbbase_cls import DbConnector, DbConverter
@@ -7,26 +8,6 @@ from decimal import Decimal
 class MssqlConvert(DbConverter):
     def __init__(self, debug: bool = False):
         super().__init__(debug)
-        self._replaced_as_boolean = {}
-
-    def _parse_conversion_rules(self) -> None:
-        boolean_replacements = utils.get_config_item(self._conversion_config, 'replaced_as_boolean', default={})
-        self._parse_replacement_rules(boolean_replacements)
-
-    def _parse_replacement_rules(self, boolean_replacements: dict):
-        self._replaced_as_boolean = {}
-        for table_name, rules in boolean_replacements.items():
-            self._replaced_as_boolean[table_name.upper()] = {}
-            for rule in rules:
-                parts = rule.split('|')
-                if len(parts) == 3:
-                    col_name, orig_type, values = parts
-                    true_val, false_val = values.split(':')
-                    self._replaced_as_boolean[table_name.upper()][col_name.upper()] = {
-                        'original_type': orig_type,
-                        'true_value': true_val,
-                        'false_value': false_val
-                    }
 
     def _convert_boolean(self, table_name: str, col: str, value: bool) -> str | None:
         replacement_rule = self._replaced_as_boolean.get(table_name.upper(), {}).get(col.upper())
@@ -52,7 +33,7 @@ class MssqlConvert(DbConverter):
                 return converted
 
         if value is None:
-            result = 'None'
+            result = DbConverter.NULL_VALUE
         elif isinstance(value, (bytes, bytearray, memoryview)):
             result = DbConverter.convert_binary(value)
         elif isinstance(value, datetime.datetime):
@@ -208,11 +189,23 @@ class MssqlConnect(DbConnector):
         if not self.connection:
             self.connect()
 
+        normalized_rows = []
+        for row in data:
+            if isinstance(row, (bytes, bytearray)):
+                row = row.decode('utf-8', errors='ignore')
+            if isinstance(row, str):
+                row = next(csv.reader([row]))
+            elif isinstance(row, dict):
+                row = [row.get(col) for col in cols]
+            elif not isinstance(row, (list, tuple)):
+                row = tuple(row) if hasattr(row, '__iter__') else (row,)
+            normalized_rows.append(tuple(row))
+
         with self.connection.cursor() as cursor:
-            cursor.executemany(insert_sql, data)
+            cursor.executemany(insert_sql, normalized_rows)
             row_count = cursor.rowcount
             if row_count == -1:
-                row_count = len(data)
+                row_count = len(normalized_rows)
 
         self.connection.commit()
         return row_count
